@@ -90,12 +90,12 @@ export const ImageGallery = ({ images, isActive }: ImageGalleryProps) => {
             <ChevronLeft size={20} />
           </button>
           
-          <button
+          {/* <button
             onClick={nextImage}
             className="absolute right-20 top-1/2 -translate-y-1/2 p-3 rounded-full bg-black/30 backdrop-blur-sm text-white hover:bg-black/50 transition-all duration-300 z-10"
           >
             <ChevronRight size={20} />
-          </button>
+          </button> */}
         </>
       )}
 
