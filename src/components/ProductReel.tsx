@@ -47,13 +47,13 @@ export const ProductReel = ({ products, currentIndex, onProductChange }: Product
   return (
     <div 
       ref={containerRef}
-      className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide pt-16 pb-20"
+      className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide"
       style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
     >
       {products.map((product, index) => (
         <div 
           key={product.id} 
-          className="h-screen snap-start flex items-center justify-center relative"
+          className="h-screen snap-start relative"
         >
           <ProductCard 
             product={product} 
