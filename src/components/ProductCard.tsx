@@ -1,8 +1,9 @@
 
 import { useState } from 'react';
-import { Heart, Share2, ShoppingCart } from 'lucide-react';
+import { Heart, Share2, BarChart3, Star, MessageCircle } from 'lucide-react';
 import { Product } from '../types/Product';
 import { ImageGallery } from './ImageGallery';
+import { Comments } from './Comments';
 
 interface ProductCardProps {
   product: Product;
@@ -11,15 +12,7 @@ interface ProductCardProps {
 
 export const ProductCard = ({ product, isActive }: ProductCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
-  const [isAddingToCart, setIsAddingToCart] = useState(false);
-
-  const handleAddToCart = async () => {
-    setIsAddingToCart(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsAddingToCart(false);
-    console.log('Added to cart:', product.name);
-  };
+  const [showComments, setShowComments] = useState(false);
 
   const handleShare = async () => {
     try {
@@ -33,6 +26,14 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
       navigator.clipboard.writeText(window.location.href);
       console.log('Link copied to clipboard');
     }
+  };
+
+  const handleReviewAnalytics = () => {
+    console.log('Opening review analytics for:', product.name);
+  };
+
+  const handleQuickReview = () => {
+    console.log('Opening quick review for:', product.name);
   };
 
   return (
@@ -56,6 +57,13 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
         </button>
         
         <button
+          onClick={() => setShowComments(true)}
+          className="p-4 rounded-full bg-black/20 backdrop-blur-lg text-white hover:bg-black/40 transition-all duration-300"
+        >
+          <MessageCircle size={24} />
+        </button>
+
+        <button
           onClick={handleShare}
           className="p-4 rounded-full bg-black/20 backdrop-blur-lg text-white hover:bg-black/40 transition-all duration-300"
         >
@@ -63,11 +71,17 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
         </button>
 
         <button
-          onClick={handleAddToCart}
-          disabled={isAddingToCart}
-          className="p-4 rounded-full bg-black/20 backdrop-blur-lg text-white hover:bg-black/40 transition-all duration-300 disabled:opacity-50"
+          onClick={handleReviewAnalytics}
+          className="p-4 rounded-full bg-black/20 backdrop-blur-lg text-white hover:bg-black/40 transition-all duration-300"
         >
-          <ShoppingCart size={24} />
+          <BarChart3 size={24} />
+        </button>
+
+        <button
+          onClick={handleQuickReview}
+          className="p-4 rounded-full bg-black/20 backdrop-blur-lg text-white hover:bg-black/40 transition-all duration-300"
+        >
+          <Star size={24} />
         </button>
       </div>
 
@@ -81,9 +95,15 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
       {/* Product Info - Bottom Overlay */}
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-6 z-20">
         <div className="text-white space-y-3">
-          <h3 className="text-2xl font-bold">
-            {product.name}
-          </h3>
+          <div className="flex items-center justify-between">
+            <h3 className="text-2xl font-bold flex-1">
+              {product.name}
+            </h3>
+            <button className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-2 rounded-full font-semibold hover:scale-105 transition-all duration-300 ml-4">
+              Buy Now
+            </button>
+          </div>
+          
           <p className="text-gray-200 text-sm opacity-90">
             {product.description}
           </p>
@@ -99,23 +119,14 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
               </span>
             ))}
           </div>
-
-          {/* Action Buttons Row - Bottom */}
-          <div className="flex space-x-3 pt-2">
-            <button
-              onClick={handleAddToCart}
-              disabled={isAddingToCart}
-              className="flex-1 bg-white text-black py-3 rounded-full font-semibold hover:bg-gray-100 transition-all duration-300 disabled:opacity-70"
-            >
-              {isAddingToCart ? 'Adding...' : 'Add to Cart'}
-            </button>
-            
-            <button className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-8 py-3 rounded-full font-semibold hover:scale-105 transition-all duration-300">
-              Buy Now
-            </button>
-          </div>
         </div>
       </div>
+
+      {/* Comments Modal */}
+      <Comments
+        isOpen={showComments}
+        onClose={() => setShowComments(false)}
+        productId={product.id}
+      />
     </div>
   );
-};
