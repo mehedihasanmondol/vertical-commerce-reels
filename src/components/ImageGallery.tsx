@@ -99,27 +99,30 @@ export const ImageGallery = ({ images, isActive }: ImageGalleryProps) => {
         </>
       )}
 
-      {/* Dots Indicator - Top Center, positioned below header */}
+      {/* Slider controls at bottom - side by side */}
       {images.length > 1 && (
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
-          {images.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setCurrentImageIndex(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === currentImageIndex
-                  ? 'bg-white scale-125'
-                  : 'bg-white/50'
-              }`}
-            />
-          ))}
-        </div>
-      )}
+        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex items-center gap-4 z-10">
+          {/* Dots Indicator */}
+          <div className="flex space-x-2">
+            {images.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentImageIndex(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentImageIndex
+                    ? 'bg-white scale-125'
+                    : 'bg-white/50'
+                }`}
+              />
+            ))}
+          </div>
 
-      {/* Swipe Indicator - Now positioned at the top */}
-      {images.length > 1 && currentImageIndex === 0 && (
-        <div className="absolute top-12 left-1/2 -translate-x-1/2 text-white/70 text-sm animate-pulse z-10 bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full">
-          Swipe for more photos →
+          {/* Swipe Indicator - only show on first image */}
+          {currentImageIndex === 0 && (
+            <div className="text-white/70 text-sm animate-pulse bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full whitespace-nowrap">
+              Swipe for more →
+            </div>
+          )}
         </div>
       )}
     </div>

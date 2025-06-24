@@ -12,6 +12,27 @@ interface ProductReelProps {
 export const ProductReel = ({ products, currentIndex, onProductChange }: ProductReelProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [isScrolling, setIsScrolling] = useState(false);
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight);
+
+  // Handle viewport height changes for mobile browser toolbar
+  useEffect(() => {
+    const handleResize = () => {
+      // Use the larger of the two values to prevent layout shifts
+      const newHeight = Math.max(window.innerHeight, document.documentElement.clientHeight);
+      setViewportHeight(newHeight);
+    };
+
+    // Set initial height
+    handleResize();
+    
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -28,8 +49,8 @@ export const ProductReel = ({ products, currentIndex, onProductChange }: Product
         
         // Calculate which product is currently in view
         const scrollTop = container.scrollTop;
-        // Account for header height (64px) when calculating reel height
-        const reelHeight = window.innerHeight - 64;
+        // Use the stable viewport height minus header height
+        const reelHeight = viewportHeight - 64;
         const newIndex = Math.round(scrollTop / reelHeight);
         
         if (newIndex !== currentIndex && newIndex >= 0 && newIndex < products.length) {
@@ -43,14 +64,16 @@ export const ProductReel = ({ products, currentIndex, onProductChange }: Product
       container.removeEventListener('scroll', handleScroll);
       clearTimeout(scrollTimeout);
     };
-  }, [currentIndex, onProductChange, products.length]);
+  }, [currentIndex, onProductChange, products.length, viewportHeight]);
+
+  const reelHeight = viewportHeight - 64;
 
   return (
     <div 
       ref={containerRef}
       className="overflow-y-auto snap-y snap-mandatory scrollbar-hide"
       style={{ 
-        height: 'calc(100vh - 64px)', // Subtract header height
+        height: `${reelHeight}px`,
         marginTop: '64px', // Account for fixed header
         scrollbarWidth: 'none', 
         msOverflowStyle: 'none' 
@@ -60,7 +83,7 @@ export const ProductReel = ({ products, currentIndex, onProductChange }: Product
         <div 
           key={product.id} 
           className="snap-start relative"
-          style={{ height: 'calc(100vh - 64px)' }} // Each reel excludes header height
+          style={{ height: `${reelHeight}px` }}
         >
           <ProductCard 
             product={product} 
