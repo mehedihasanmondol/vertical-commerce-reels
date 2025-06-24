@@ -1,7 +1,7 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 
@@ -16,24 +16,41 @@ interface CartItem {
 
 const Cart = () => {
   const { toast } = useToast();
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: '1',
-      name: 'Premium Wireless Headphones',
-      price: 199.99,
-      image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop',
-      quantity: 1,
-      features: ['Noise Cancelling', 'Wireless', '30hr Battery']
-    },
-    {
-      id: '2',
-      name: 'Smart Fitness Watch',
-      price: 299.99,
-      image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop',
-      quantity: 2,
-      features: ['Heart Rate Monitor', 'GPS', 'Waterproof']
+  const navigate = useNavigate();
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  useEffect(() => {
+    // Load cart items from localStorage
+    const savedItems = localStorage.getItem('cartItems');
+    if (savedItems) {
+      setCartItems(JSON.parse(savedItems));
+    } else {
+      // Sample items for demo if no cart exists
+      setCartItems([
+        {
+          id: '1',
+          name: 'Premium Wireless Headphones',
+          price: 199.99,
+          image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop',
+          quantity: 1,
+          features: ['Noise Cancelling', 'Wireless', '30hr Battery']
+        },
+        {
+          id: '2',
+          name: 'Smart Fitness Watch',
+          price: 299.99,
+          image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop',
+          quantity: 2,
+          features: ['Heart Rate Monitor', 'GPS', 'Waterproof']
+        }
+      ]);
     }
-  ]);
+  }, []);
+
+  // Save cart items to localStorage whenever cartItems changes
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   const updateQuantity = (id: string, newQuantity: number) => {
     if (newQuantity === 0) {
@@ -58,24 +75,21 @@ const Cart = () => {
 
   const clearCart = () => {
     setCartItems([]);
+    localStorage.removeItem('cartItems');
     toast({
       title: "Cart cleared",
       description: "All items have been removed from your cart",
     });
   };
 
+  const handleCheckout = () => {
+    navigate('/checkout');
+  };
+
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   const tax = subtotal * 0.08; // 8% tax
   const shipping = subtotal > 50 ? 0 : 9.99; // Free shipping over $50
   const total = subtotal + tax + shipping;
-
-  const handleCheckout = () => {
-    toast({
-      title: "Checkout initiated",
-      description: "Redirecting to payment...",
-    });
-    // Here you would typically redirect to a payment processor
-  };
 
   if (cartItems.length === 0) {
     return (

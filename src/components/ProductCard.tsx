@@ -1,8 +1,8 @@
-
 import { useState } from 'react';
 import { Heart, Share2, MessageCircle, Star, ShoppingCart } from 'lucide-react';
 import { Product } from '../types/Product';
 import { ImageGallery } from './ImageGallery';
+import { BuyNowButton } from './BuyNowButton';
 
 interface ProductCardProps {
   product: Product;
@@ -87,13 +87,6 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
         >
           <Star size={18} className="sm:w-5 sm:h-5" />
         </button>
-
-        <button
-          onClick={handleAddToCart}
-          className="p-2.5 sm:p-3 rounded-full bg-green-600/80 backdrop-blur-lg text-white hover:bg-green-700/80 transition-all duration-300 shadow-lg shadow-green-600/25"
-        >
-          <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
-        </button>
       </div>
 
       {/* Price Badge - Top Left, now properly positioned below header */}
@@ -116,12 +109,6 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
                 {product.description}
               </p>
             </div>
-            <button
-              onClick={handleBuyNow}
-              className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-semibold hover:scale-105 transition-all duration-300 text-xs sm:text-sm flex-shrink-0"
-            >
-              Buy Now
-            </button>
           </div>
           
           {/* Product Features */}
@@ -135,6 +122,9 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
               </span>
             ))}
           </div>
+
+          {/* Buy Now and Add to Cart Buttons */}
+          <BuyNowButton product={product} className="mb-2 sm:mb-3" />
 
           {/* Comment and Rating & Review Buttons */}
           <div className="flex flex-wrap gap-2 sm:gap-3">
