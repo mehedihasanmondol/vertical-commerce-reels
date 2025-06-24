@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Heart, Share2, MessageCircle, Star, ShoppingCart } from 'lucide-react';
 import { Product } from '../types/Product';
 import { ImageGallery } from './ImageGallery';
+import { useToast } from '@/hooks/use-toast';
 
 interface ProductCardProps {
   product: Product;
@@ -13,46 +14,113 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [showRatingReview, setShowRatingReview] = useState(false);
+  const [cartItems, setCartItems] = useState<string[]>([]);
+  const { toast } = useToast();
 
   const handleShare = async () => {
     try {
-      await navigator.share({
-        title: product.name,
-        text: `Check out this amazing ${product.name}!`,
-        url: window.location.href,
-      });
+      if (navigator.share) {
+        await navigator.share({
+          title: product.name,
+          text: `Check out this amazing ${product.name} for just $${product.price}!`,
+          url: window.location.href,
+        });
+        toast({
+          title: "Shared successfully!",
+          description: "Product shared via native share dialog",
+        });
+      } else {
+        // Fallback to clipboard
+        await navigator.clipboard.writeText(window.location.href);
+        toast({
+          title: "Link copied!",
+          description: "Product link copied to clipboard",
+        });
+      }
     } catch (error) {
-      // Fallback to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      console.log('Link copied to clipboard');
+      toast({
+        title: "Share failed",
+        description: "Unable to share this product",
+        variant: "destructive",
+      });
     }
   };
 
   const handleQuickReview = () => {
-    console.log('Opening quick review for:', product.name);
+    setShowRatingReview(true);
+    toast({
+      title: "Quick Review",
+      description: "Rate and review this product",
+    });
   };
 
   const handleComments = () => {
     setShowComments(!showComments);
-    console.log('Toggle comments for:', product.name);
+    if (!showComments) {
+      toast({
+        title: "Comments opened",
+        description: "Share your thoughts about this product",
+      });
+    }
   };
 
   const handleRatingReview = () => {
     setShowRatingReview(!showRatingReview);
-    console.log('Toggle rating & review for:', product.name);
   };
 
   const handleBuyNow = () => {
-    console.log('Buy now clicked for:', product.name);
+    // Simulate purchase process
+    toast({
+      title: "Redirecting to checkout...",
+      description: `Purchasing ${product.name} for $${product.price}`,
+    });
+    
+    // Simulate checkout process
+    setTimeout(() => {
+      toast({
+        title: "Purchase successful! 🎉",
+        description: `Thank you for buying ${product.name}. You'll receive a confirmation email shortly.`,
+      });
+    }, 2000);
   };
 
   const handleAddToCart = () => {
-    console.log('Add to cart clicked for:', product.name);
+    const isAlreadyInCart = cartItems.includes(product.id);
+    
+    if (isAlreadyInCart) {
+      setCartItems(prev => prev.filter(id => id !== product.id));
+      toast({
+        title: "Removed from cart",
+        description: `${product.name} removed from your cart`,
+      });
+    } else {
+      setCartItems(prev => [...prev, product.id]);
+      toast({
+        title: "Added to cart! 🛒",
+        description: `${product.name} added to your cart`,
+      });
+    }
+  };
+
+  const handleToggleFavorite = () => {
+    setIsLiked(!isLiked);
+    if (!isLiked) {
+      toast({
+        title: "Added to favorites! ❤️",
+        description: `${product.name} saved to your favorites`,
+      });
+    } else {
+      toast({
+        title: "Removed from favorites",
+        description: `${product.name} removed from favorites`,
+      });
+    }
   };
 
   // Mock rating data
   const mockRating = 4.2;
   const mockReviewCount = 127;
+  const isInCart = cartItems.includes(product.id);
 
   return (
     <div className="relative w-full h-full bg-black">
@@ -64,7 +132,7 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
       {/* Vertical Action Buttons - Right Edge with safe area */}
       <div className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 flex flex-col space-y-3 sm:space-y-4 z-30">
         <button
-          onClick={() => setIsLiked(!isLiked)}
+          onClick={handleToggleFavorite}
           className={`p-2.5 sm:p-3 rounded-full backdrop-blur-lg transition-all duration-300 ${
             isLiked 
               ? 'bg-red-500/80 text-white shadow-lg shadow-red-500/25' 
@@ -90,7 +158,11 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
 
         <button
           onClick={handleAddToCart}
-          className="p-2.5 sm:p-3 rounded-full bg-green-600/80 backdrop-blur-lg text-white hover:bg-green-700/80 transition-all duration-300 shadow-lg shadow-green-600/25"
+          className={`p-2.5 sm:p-3 rounded-full backdrop-blur-lg transition-all duration-300 shadow-lg ${
+            isInCart
+              ? 'bg-blue-600/80 text-white shadow-blue-600/25'
+              : 'bg-green-600/80 text-white hover:bg-green-700/80 shadow-green-600/25'
+          }`}
         >
           <ShoppingCart size={18} className="sm:w-5 sm:h-5" />
         </button>
@@ -182,7 +254,16 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
                   className="w-full p-3 border rounded-lg resize-none text-sm sm:text-base"
                   rows={3}
                 />
-                <button className="mt-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm sm:text-base">
+                <button 
+                  onClick={() => {
+                    toast({
+                      title: "Comment posted! 💬",
+                      description: "Your comment has been shared",
+                    });
+                    setShowComments(false);
+                  }}
+                  className="mt-2 bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm sm:text-base"
+                >
                   Post Comment
                 </button>
               </div>
@@ -249,7 +330,16 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
                 </div>
               </div>
               
-              <button className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm sm:text-base">
+              <button 
+                onClick={() => {
+                  toast({
+                    title: "Review submitted! ⭐",
+                    description: "Thank you for your feedback",
+                  });
+                  setShowRatingReview(false);
+                }}
+                className="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition-colors text-sm sm:text-base"
+              >
                 Write a Review
               </button>
             </div>
