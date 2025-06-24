@@ -28,8 +28,9 @@ export const ProductReel = ({ products, currentIndex, onProductChange }: Product
         
         // Calculate which product is currently in view
         const scrollTop = container.scrollTop;
-        const windowHeight = window.innerHeight;
-        const newIndex = Math.round(scrollTop / windowHeight);
+        // Account for header height (64px) when calculating reel height
+        const reelHeight = window.innerHeight - 64;
+        const newIndex = Math.round(scrollTop / reelHeight);
         
         if (newIndex !== currentIndex && newIndex >= 0 && newIndex < products.length) {
           onProductChange(newIndex);
@@ -47,13 +48,19 @@ export const ProductReel = ({ products, currentIndex, onProductChange }: Product
   return (
     <div 
       ref={containerRef}
-      className="h-screen overflow-y-auto snap-y snap-mandatory scrollbar-hide"
-      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      className="overflow-y-auto snap-y snap-mandatory scrollbar-hide"
+      style={{ 
+        height: 'calc(100vh - 64px)', // Subtract header height
+        marginTop: '64px', // Account for fixed header
+        scrollbarWidth: 'none', 
+        msOverflowStyle: 'none' 
+      }}
     >
       {products.map((product, index) => (
         <div 
           key={product.id} 
-          className="h-screen snap-start relative"
+          className="snap-start relative"
+          style={{ height: 'calc(100vh - 64px)' }} // Each reel excludes header height
         >
           <ProductCard 
             product={product} 

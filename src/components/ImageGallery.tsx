@@ -99,9 +99,9 @@ export const ImageGallery = ({ images, isActive }: ImageGalleryProps) => {
         </>
       )}
 
-      {/* Dots Indicator - Top Center */}
+      {/* Dots Indicator - Top Center, positioned below header */}
       {images.length > 1 && (
-        <div className="absolute top-6 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
           {images.map((_, index) => (
             <button
               key={index}
@@ -116,9 +116,9 @@ export const ImageGallery = ({ images, isActive }: ImageGalleryProps) => {
         </div>
       )}
 
-      {/* Swipe Indicator - Show when multiple images available */}
+      {/* Swipe Indicator - Now positioned at the top */}
       {images.length > 1 && currentImageIndex === 0 && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 text-white/60 text-sm animate-pulse z-10">
+        <div className="absolute top-12 left-1/2 -translate-x-1/2 text-white/70 text-sm animate-pulse z-10 bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full">
           Swipe for more photos →
         </div>
       )}

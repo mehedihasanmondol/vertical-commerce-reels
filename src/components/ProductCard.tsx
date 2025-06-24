@@ -96,16 +96,17 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
         </button>
       </div>
 
-      {/* Price Badge - Top Left with safe area */}
+      {/* Price Badge - Top Left, now properly positioned below header */}
       <div className="absolute top-4 sm:top-6 left-2 sm:left-4 z-20">
         <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-full font-bold text-sm sm:text-base shadow-lg">
           ${product.price}
         </span>
       </div>
 
-      {/* Product Info - Bottom Overlay with safe area for navigation */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent pb-16 sm:pb-20 p-3 sm:p-4 z-20">
-        <div className="text-white space-y-2 sm:space-y-3">
+      {/* Product Info - Bottom Overlay with proper safe area handling */}
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent z-20" 
+           style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
+        <div className="text-white space-y-2 sm:space-y-3 p-3 sm:p-4 pb-4 sm:pb-6">
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
               <h3 className="text-base sm:text-xl font-bold mb-1 sm:mb-2 leading-tight">
@@ -160,7 +161,8 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
       {/* Comments Overlay */}
       {showComments && (
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-40 flex items-end">
-          <div className="w-full bg-white dark:bg-gray-900 rounded-t-2xl p-4 sm:p-6 max-h-2/3 overflow-y-auto mb-16">
+          <div className="w-full bg-white dark:bg-gray-900 rounded-t-2xl p-4 sm:p-6 max-h-2/3 overflow-y-auto"
+               style={{ marginBottom: 'max(0px, env(safe-area-inset-bottom))' }}>
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-base sm:text-lg font-semibold">Comments</h4>
               <button
@@ -192,7 +194,8 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
       {/* Rating & Review Overlay */}
       {showRatingReview && (
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm z-40 flex items-end">
-          <div className="w-full bg-white dark:bg-gray-900 rounded-t-2xl p-4 sm:p-6 max-h-2/3 overflow-y-auto mb-16">
+          <div className="w-full bg-white dark:bg-gray-900 rounded-t-2xl p-4 sm:p-6 max-h-2/3 overflow-y-auto"
+               style={{ marginBottom: 'max(0px, env(safe-area-inset-bottom))' }}>
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-base sm:text-lg font-semibold">Rating & Reviews</h4>
               <button
