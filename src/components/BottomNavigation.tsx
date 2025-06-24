@@ -1,7 +1,12 @@
 
 import { Home, Search, ShoppingCart, User } from 'lucide-react';
 
-export const BottomNavigation = () => {
+interface BottomNavigationProps {
+  isVisible?: boolean;
+  onToggle?: () => void;
+}
+
+export const BottomNavigation = ({ isVisible = true, onToggle }: BottomNavigationProps) => {
   const navItems = [
     { icon: Home, label: 'Home', active: true },
     { icon: Search, label: 'Search', active: false },
@@ -10,8 +15,12 @@ export const BottomNavigation = () => {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-black/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 z-40">
-      <div className="flex justify-around items-center py-2">
+    <nav 
+      className={`fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-black/90 backdrop-blur-lg border-t border-gray-200 dark:border-gray-800 z-40 transition-transform duration-300 ease-in-out ${
+        isVisible ? 'translate-y-0' : 'translate-y-full'
+      }`}
+    >
+      <div className="flex justify-around items-center py-2 pb-safe">
         {navItems.map((item, index) => {
           const Icon = item.icon;
           return (

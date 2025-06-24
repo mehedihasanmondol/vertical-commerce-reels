@@ -8,6 +8,8 @@ import { mockProducts } from '../data/mockProducts';
 const Index = () => {
   const [currentProductIndex, setCurrentProductIndex] = useState(0);
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isBottomNavVisible, setIsBottomNavVisible] = useState(true);
+  const [previousProductIndex, setPreviousProductIndex] = useState(0);
 
   useEffect(() => {
     // Update URL when product changes
@@ -18,12 +20,28 @@ const Index = () => {
   }, [currentProductIndex]);
 
   const handleProductChange = (index: number) => {
+    setPreviousProductIndex(currentProductIndex);
+    
+    // Show navigation when scrolling up (to previous reel)
+    // Hide navigation when scrolling down (to next reel)
+    if (index < currentProductIndex) {
+      // Scrolling up - show navigation
+      setIsBottomNavVisible(true);
+    } else if (index > currentProductIndex) {
+      // Scrolling down - hide navigation
+      setIsBottomNavVisible(false);
+    }
+    
     setCurrentProductIndex(index);
   };
 
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
     document.documentElement.classList.toggle('dark');
+  };
+
+  const toggleBottomNav = () => {
+    setIsBottomNavVisible(!isBottomNavVisible);
   };
 
   return (
@@ -40,7 +58,20 @@ const Index = () => {
           onProductChange={handleProductChange}
         />
         
-        <BottomNavigation />
+        {/* 50/50 Bottom Navigation Toggle - Always visible */}
+        <div className="fixed bottom-0 left-1/2 transform -translate-x-1/2 z-50">
+          <button
+            onClick={toggleBottomNav}
+            className="w-16 h-6 bg-white/60 dark:bg-black/60 backdrop-blur-sm rounded-t-full flex items-start justify-center pt-1 hover:bg-white/80 dark:hover:bg-black/80 transition-all duration-300"
+          >
+            <div className="w-8 h-1 bg-gray-400 dark:bg-gray-300 rounded-full" />
+          </button>
+        </div>
+        
+        <BottomNavigation 
+          isVisible={isBottomNavVisible}
+          onToggle={toggleBottomNav}
+        />
       </div>
     </div>
   );
