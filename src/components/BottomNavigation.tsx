@@ -1,5 +1,6 @@
 
 import { Home, Search, ShoppingCart, User } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
 
 interface BottomNavigationProps {
   isVisible?: boolean;
@@ -7,11 +8,13 @@ interface BottomNavigationProps {
 }
 
 export const BottomNavigation = ({ isVisible = true, onToggle }: BottomNavigationProps) => {
+  const location = useLocation();
+  
   const navItems = [
-    { icon: Home, label: 'Home', active: true },
-    { icon: Search, label: 'Search', active: false },
-    { icon: ShoppingCart, label: 'Cart', active: false },
-    { icon: User, label: 'Profile', active: false },
+    { icon: Home, label: 'Home', path: '/', active: location.pathname === '/' },
+    { icon: Search, label: 'Search', path: '/search', active: location.pathname === '/search' },
+    { icon: ShoppingCart, label: 'Cart', path: '/cart', active: location.pathname === '/cart' },
+    { icon: User, label: 'Profile', path: '/profile', active: location.pathname === '/profile' },
   ];
 
   return (
@@ -24,8 +27,9 @@ export const BottomNavigation = ({ isVisible = true, onToggle }: BottomNavigatio
         {navItems.map((item, index) => {
           const Icon = item.icon;
           return (
-            <button
+            <Link
               key={index}
+              to={item.path}
               className={`flex flex-col items-center space-y-1 p-2 rounded-lg transition-all duration-300 ${
                 item.active
                   ? 'text-purple-600 dark:text-purple-400'
@@ -37,7 +41,7 @@ export const BottomNavigation = ({ isVisible = true, onToggle }: BottomNavigatio
               {item.active && (
                 <div className="w-1 h-1 bg-purple-600 dark:bg-purple-400 rounded-full" />
               )}
-            </button>
+            </Link>
           );
         })}
       </div>
