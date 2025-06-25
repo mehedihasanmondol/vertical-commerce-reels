@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Heart, Share2, MessageCircle, Star, ShoppingCart } from 'lucide-react';
 import { Product } from '../types/Product';
 import { ImageGallery } from './ImageGallery';
-import { QuickCheckout } from './QuickCheckout';
+import QuickCheckout from './QuickCheckout';
 
 interface ProductCardProps {
   product: Product;
@@ -263,9 +263,10 @@ export const ProductCard = ({ product, isActive }: ProductCardProps) => {
 
       {/* Quick Checkout Modal */}
       <QuickCheckout
-        product={product}
         isOpen={showQuickCheckout}
         onClose={() => setShowQuickCheckout(false)}
+        productName={product.name}
+        productPrice={product.price}
       />
     </>
   );

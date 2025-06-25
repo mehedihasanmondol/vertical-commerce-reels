@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { NavigationHeader } from '@/components/NavigationHeader';
 import { BottomNavigation } from '@/components/BottomNavigation';
@@ -21,6 +20,7 @@ interface Order {
 
 const Orders = () => {
   const { toast } = useToast();
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [orders, setOrders] = useState<Order[]>([
     {
       id: '1',
@@ -93,7 +93,7 @@ const Orders = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-black dark:to-purple-900">
-      <NavigationHeader />
+      <NavigationHeader isDarkMode={isDarkMode} toggleDarkMode={() => setIsDarkMode(!isDarkMode)} />
       
       <main className="container mx-auto px-4 py-6 pb-20 space-y-6">
         <div className="text-center mb-8">
