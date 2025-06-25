@@ -1,5 +1,5 @@
 
-import { Home, Search, ShoppingCart, User } from 'lucide-react';
+import { Home, Search, ShoppingCart, User, Package } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 interface BottomNavigationProps {
@@ -14,6 +14,7 @@ export const BottomNavigation = ({ isVisible = true, onToggle }: BottomNavigatio
     { icon: Home, label: 'Home', path: '/', active: location.pathname === '/' },
     { icon: Search, label: 'Search', path: '/search', active: location.pathname === '/search' },
     { icon: ShoppingCart, label: 'Cart', path: '/cart', active: location.pathname === '/cart' },
+    { icon: Package, label: 'Orders', path: '/orders', active: location.pathname === '/orders' },
     { icon: User, label: 'Profile', path: '/profile', active: location.pathname === '/profile' },
   ];
 
