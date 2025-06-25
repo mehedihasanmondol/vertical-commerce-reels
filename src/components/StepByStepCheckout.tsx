@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,9 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Check, MapPin, Truck, CreditCard, User } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, MapPin, Truck, CreditCard, User, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface StepByStepCheckoutProps {
   productName: string;
@@ -16,11 +17,29 @@ interface StepByStepCheckoutProps {
   onClose: () => void;
 }
 
+interface Address {
+  id: string;
+  name: string;
+  street: string;
+  city: string;
+  state: string;
+  zipCode: string;
+  isDefault: boolean;
+}
+
+interface PaymentMethod {
+  id: string;
+  type: 'card' | 'paypal' | 'bank';
+  name: string;
+  details: string;
+  isDefault: boolean;
+}
+
 const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCheckoutProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
-  const totalSteps = 3;
+  const totalSteps = 4;
 
   // Mock profile data (in real app, this would come from user's profile)
   const [customerInfo, setCustomerInfo] = useState({
@@ -30,8 +49,7 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
     phone: '+1 (555) 123-4567'
   });
 
-  const [selectedAddress, setSelectedAddress] = useState('1');
-  const addresses = [
+  const [addresses, setAddresses] = useState<Address[]>([
     {
       id: '1',
       name: 'Home',
@@ -50,9 +68,47 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
       zipCode: '10002',
       isDefault: false
     }
-  ];
+  ]);
 
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
+    {
+      id: '1',
+      type: 'card',
+      name: 'Visa ending in 1234',
+      details: '**** **** **** 1234',
+      isDefault: true
+    },
+    {
+      id: '2',
+      type: 'paypal',
+      name: 'PayPal',
+      details: 'john.doe@example.com',
+      isDefault: false
+    }
+  ]);
+
+  const [selectedAddress, setSelectedAddress] = useState('1');
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('1');
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('1');
+  
+  // New address form
+  const [newAddress, setNewAddress] = useState({
+    name: '',
+    street: '',
+    city: '',
+    state: '',
+    zipCode: ''
+  });
+
+  // New payment method form
+  const [newPaymentMethod, setNewPaymentMethod] = useState({
+    type: 'card' as 'card' | 'paypal' | 'bank',
+    cardNumber: '',
+    expiryDate: '',
+    cvv: '',
+    cardholderName: ''
+  });
+
   const deliveryMethods = [
     {
       id: '1',
@@ -89,6 +145,62 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleAddAddress = () => {
+    if (!newAddress.name || !newAddress.street || !newAddress.city || !newAddress.state || !newAddress.zipCode) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all address fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const addressId = (addresses.length + 1).toString();
+    const newAddr: Address = {
+      id: addressId,
+      ...newAddress,
+      isDefault: addresses.length === 0
+    };
+
+    setAddresses([...addresses, newAddr]);
+    setSelectedAddress(addressId);
+    setNewAddress({ name: '', street: '', city: '', state: '', zipCode: '' });
+    
+    toast({
+      title: "Address Added",
+      description: "New delivery address has been saved to your profile",
+    });
+  };
+
+  const handleAddPaymentMethod = () => {
+    if (!newPaymentMethod.cardNumber || !newPaymentMethod.expiryDate || !newPaymentMethod.cvv || !newPaymentMethod.cardholderName) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all payment method fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const paymentId = (paymentMethods.length + 1).toString();
+    const newPayment: PaymentMethod = {
+      id: paymentId,
+      type: newPaymentMethod.type,
+      name: `${newPaymentMethod.type === 'card' ? 'Card' : 'PayPal'} ending in ${newPaymentMethod.cardNumber.slice(-4)}`,
+      details: `**** **** **** ${newPaymentMethod.cardNumber.slice(-4)}`,
+      isDefault: paymentMethods.length === 0
+    };
+
+    setPaymentMethods([...paymentMethods, newPayment]);
+    setSelectedPaymentMethod(paymentId);
+    setNewPaymentMethod({ type: 'card', cardNumber: '', expiryDate: '', cvv: '', cardholderName: '' });
+    
+    toast({
+      title: "Payment Method Added",
+      description: "New payment method has been saved to your profile",
+    });
   };
 
   const handlePlaceOrder = () => {
@@ -133,6 +245,7 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
       case 1: return <User className="w-5 h-5" />;
       case 2: return <MapPin className="w-5 h-5" />;
       case 3: return <Truck className="w-5 h-5" />;
+      case 4: return <CreditCard className="w-5 h-5" />;
       default: return <div className="w-5 h-5 rounded-full bg-gray-300" />;
     }
   };
@@ -209,6 +322,51 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
                 </div>
               ))}
             </RadioGroup>
+
+            {/* Add New Address */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add New Address
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Delivery Address</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <Input 
+                    placeholder="Address Name (e.g., Home, Office)" 
+                    value={newAddress.name}
+                    onChange={(e) => setNewAddress({...newAddress, name: e.target.value})}
+                  />
+                  <Input 
+                    placeholder="Street Address" 
+                    value={newAddress.street}
+                    onChange={(e) => setNewAddress({...newAddress, street: e.target.value})}
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input 
+                      placeholder="City" 
+                      value={newAddress.city}
+                      onChange={(e) => setNewAddress({...newAddress, city: e.target.value})}
+                    />
+                    <Input 
+                      placeholder="State" 
+                      value={newAddress.state}
+                      onChange={(e) => setNewAddress({...newAddress, state: e.target.value})}
+                    />
+                  </div>
+                  <Input 
+                    placeholder="ZIP Code" 
+                    value={newAddress.zipCode}
+                    onChange={(e) => setNewAddress({...newAddress, zipCode: e.target.value})}
+                  />
+                  <Button onClick={handleAddAddress} className="w-full">Save Address</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         );
 
@@ -261,6 +419,82 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
           </div>
         );
 
+      case 4:
+        return (
+          <div className="space-y-4">
+            <div className="text-center mb-6">
+              <h3 className="text-lg font-semibold mb-2">Payment Method</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Choose your payment method</p>
+            </div>
+            <RadioGroup value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod}>
+              {paymentMethods.map((method) => (
+                <div key={method.id} className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <RadioGroupItem value={method.id} id={method.id} />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Label htmlFor={method.id} className="font-medium cursor-pointer">
+                        {method.name}
+                      </Label>
+                      {method.isDefault && <Badge variant="secondary">Default</Badge>}
+                    </div>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">{method.details}</p>
+                  </div>
+                </div>
+              ))}
+            </RadioGroup>
+
+            {/* Add New Payment Method */}
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="w-full">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add New Payment Method
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Payment Method</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <Select value={newPaymentMethod.type} onValueChange={(value: 'card' | 'paypal' | 'bank') => setNewPaymentMethod({...newPaymentMethod, type: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Payment Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="card">Credit/Debit Card</SelectItem>
+                      <SelectItem value="paypal">PayPal</SelectItem>
+                      <SelectItem value="bank">Bank Transfer</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <Input 
+                    placeholder="Cardholder Name" 
+                    value={newPaymentMethod.cardholderName}
+                    onChange={(e) => setNewPaymentMethod({...newPaymentMethod, cardholderName: e.target.value})}
+                  />
+                  <Input 
+                    placeholder="Card Number" 
+                    value={newPaymentMethod.cardNumber}
+                    onChange={(e) => setNewPaymentMethod({...newPaymentMethod, cardNumber: e.target.value})}
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input 
+                      placeholder="MM/YY" 
+                      value={newPaymentMethod.expiryDate}
+                      onChange={(e) => setNewPaymentMethod({...newPaymentMethod, expiryDate: e.target.value})}
+                    />
+                    <Input 
+                      placeholder="CVV" 
+                      value={newPaymentMethod.cvv}
+                      onChange={(e) => setNewPaymentMethod({...newPaymentMethod, cvv: e.target.value})}
+                    />
+                  </div>
+                  <Button onClick={handleAddPaymentMethod} className="w-full">Save Payment Method</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        );
+
       default:
         return null;
     }
@@ -270,7 +504,7 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
     <div className="max-w-2xl mx-auto">
       {/* Progress Steps */}
       <div className="flex items-center justify-between mb-8">
-        {[1, 2, 3].map((step) => (
+        {[1, 2, 3, 4].map((step) => (
           <div key={step} className="flex items-center">
             <div className={`flex items-center justify-center w-10 h-10 rounded-full ${
               step <= currentStep 
@@ -279,8 +513,8 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
             }`}>
               {getStepIcon(step)}
             </div>
-            {step < 3 && (
-              <div className={`w-12 h-1 mx-2 ${
+            {step < 4 && (
+              <div className={`w-8 h-1 mx-2 ${
                 step < currentStep ? 'bg-purple-600' : 'bg-gray-200 dark:bg-gray-700'
               }`} />
             )}

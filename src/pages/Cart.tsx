@@ -4,6 +4,9 @@ import { ArrowLeft, Plus, Minus, Trash2, ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { NavigationHeader } from '@/components/NavigationHeader';
+import { BottomNavigation } from '@/components/BottomNavigation';
+import QuickCheckout from '@/components/QuickCheckout';
 
 interface CartItem {
   id: string;
@@ -16,6 +19,8 @@ interface CartItem {
 
 const Cart = () => {
   const { toast } = useToast();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showQuickCheckout, setShowQuickCheckout] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
       id: '1',
@@ -69,31 +74,17 @@ const Cart = () => {
   const shipping = subtotal > 50 ? 0 : 9.99; // Free shipping over $50
   const total = subtotal + tax + shipping;
 
-  const handleCheckout = () => {
-    toast({
-      title: "Checkout initiated",
-      description: "Redirecting to payment...",
-    });
-    // Here you would typically redirect to a payment processor
+  const handleQuickCheckout = () => {
+    setShowQuickCheckout(true);
   };
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black">
-        {/* Header */}
-        <div className="bg-white/80 dark:bg-black/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 sticky top-0 z-40">
-          <div className="flex items-center justify-between px-4 py-4">
-            <Link to="/" className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-              <ArrowLeft size={20} />
-              <span>Back</span>
-            </Link>
-            <h1 className="text-xl font-bold">Shopping Cart</h1>
-            <div className="w-16" /> {/* Spacer for centering */}
-          </div>
-        </div>
-
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-black dark:to-purple-900">
+        <NavigationHeader isDarkMode={isDarkMode} toggleDarkMode={() => setIsDarkMode(!isDarkMode)} />
+        
         {/* Empty Cart */}
-        <div className="flex flex-col items-center justify-center px-4 py-20">
+        <div className="flex flex-col items-center justify-center px-4 py-20 pt-24">
           <ShoppingBag size={80} className="text-gray-400 mb-6" />
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">Your cart is empty</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-8 text-center">
@@ -105,20 +96,20 @@ const Cart = () => {
             </Button>
           </Link>
         </div>
+
+        <BottomNavigation />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black pb-20">
-      {/* Header */}
-      <div className="bg-white/80 dark:bg-black/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 sticky top-0 z-40">
-        <div className="flex items-center justify-between px-4 py-4">
-          <Link to="/" className="flex items-center space-x-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
-            <ArrowLeft size={20} />
-            <span>Back</span>
-          </Link>
-          <h1 className="text-xl font-bold">Shopping Cart ({cartItems.length})</h1>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 dark:from-gray-900 dark:via-black dark:to-purple-900">
+      <NavigationHeader isDarkMode={isDarkMode} toggleDarkMode={() => setIsDarkMode(!isDarkMode)} />
+      
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-6 pb-20 pt-20 space-y-6">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Shopping Cart ({cartItems.length})</h1>
           <button
             onClick={clearCart}
             className="text-red-500 hover:text-red-700 text-sm font-medium"
@@ -126,76 +117,74 @@ const Cart = () => {
             Clear All
           </button>
         </div>
-      </div>
 
-      {/* Cart Items */}
-      <div className="px-4 py-6 space-y-4">
-        {cartItems.map((item) => (
-          <div key={item.id} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div className="flex gap-4">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-20 h-20 rounded-lg object-cover"
-              />
-              
-              <div className="flex-1 space-y-2">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2">
-                    {item.name}
-                  </h3>
-                  <button
-                    onClick={() => removeItem(item.id)}
-                    className="text-red-500 hover:text-red-700 p-1"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
+        {/* Cart Items */}
+        <div className="space-y-4">
+          {cartItems.map((item) => (
+            <div key={item.id} className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
+              <div className="flex gap-4">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-20 h-20 rounded-lg object-cover"
+                />
                 
-                <div className="flex flex-wrap gap-1">
-                  {item.features.slice(0, 2).map((feature, index) => (
-                    <span
-                      key={index}
-                      className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full text-xs"
+                <div className="flex-1 space-y-2">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2">
+                      {item.name}
+                    </h3>
+                    <button
+                      onClick={() => removeItem(item.id)}
+                      className="text-red-500 hover:text-red-700 p-1"
                     >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <div className="text-lg font-bold text-purple-600">
-                    ${item.price.toFixed(2)}
+                      <Trash2 size={16} />
+                    </button>
                   </div>
                   
-                  <div className="flex items-center space-x-3">
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500"
-                    >
-                      <Minus size={14} />
-                    </button>
+                  <div className="flex flex-wrap gap-1">
+                    {item.features.slice(0, 2).map((feature, index) => (
+                      <span
+                        key={index}
+                        className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full text-xs"
+                      >
+                        {feature}
+                      </span>
+                    ))}
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <div className="text-lg font-bold text-purple-600">
+                      ${item.price.toFixed(2)}
+                    </div>
                     
-                    <span className="font-semibold min-w-8 text-center">
-                      {item.quantity}
-                    </span>
-                    
-                    <button
-                      onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500"
-                    >
-                      <Plus size={14} />
-                    </button>
+                    <div className="flex items-center space-x-3">
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500"
+                      >
+                        <Minus size={14} />
+                      </button>
+                      
+                      <span className="font-semibold min-w-8 text-center">
+                        {item.quantity}
+                      </span>
+                      
+                      <button
+                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                        className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center hover:bg-gray-300 dark:hover:bg-gray-500"
+                      >
+                        <Plus size={14} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      {/* Order Summary */}
-      <div className="px-4 pb-6">
+        {/* Order Summary */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm border border-gray-200 dark:border-gray-700">
           <h3 className="text-lg font-semibold mb-4">Order Summary</h3>
           
@@ -236,13 +225,23 @@ const Cart = () => {
           </div>
           
           <Button
-            onClick={handleCheckout}
+            onClick={handleQuickCheckout}
             className="w-full mt-6 h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold"
           >
             Proceed to Checkout
           </Button>
         </div>
-      </div>
+      </main>
+
+      <BottomNavigation />
+
+      {/* Quick Checkout Modal */}
+      <QuickCheckout
+        isOpen={showQuickCheckout}
+        onClose={() => setShowQuickCheckout(false)}
+        productName={`Cart Items (${cartItems.length} items)`}
+        productPrice={total}
+      />
     </div>
   );
 };
