@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Check, MapPin, Truck, CreditCard, User, Plus } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, MapPin, Truck, CreditCard, User, Plus, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -90,6 +91,7 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
   const [selectedAddress, setSelectedAddress] = useState('1');
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('1');
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('1');
+  const [paymentChoice, setPaymentChoice] = useState<'now' | 'later'>('later');
   
   // New address form
   const [newAddress, setNewAddress] = useState({
@@ -208,32 +210,39 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
     const totalAmount = productPrice + (selectedDelivery?.price || 0);
     
     toast({
-      title: "Order Placed Successfully!",
-      description: `Your order for ${productName} has been placed. Total: $${totalAmount.toFixed(2)}`,
+      title: "Order Confirmed Successfully!",
+      description: `Your order for ${productName} has been confirmed. Total: $${totalAmount.toFixed(2)}`,
     });
 
-    // Simulate order creation and show payment suggestion
-    setTimeout(() => {
-      toast({
-        title: "Payment Suggestion",
-        description: "Would you like to pay now or pay later?",
-        action: (
-          <div className="flex gap-2">
+    if (paymentChoice === 'now') {
+      // Simulate immediate payment process
+      setTimeout(() => {
+        toast({
+          title: "Payment Processing",
+          description: "Redirecting to payment gateway...",
+        });
+      }, 1000);
+
+      setTimeout(() => {
+        toast({
+          title: "Payment Successful",
+          description: "Your payment has been processed successfully!",
+        });
+      }, 3000);
+    } else {
+      // Show pay later confirmation
+      setTimeout(() => {
+        toast({
+          title: "Order Saved",
+          description: "You can complete payment anytime from your orders page.",
+          action: (
             <Button size="sm" onClick={() => navigate('/orders')}>
-              Pay Later
+              View Orders
             </Button>
-            <Button size="sm" variant="outline" onClick={() => {
-              toast({
-                title: "Payment Initiated",
-                description: "Redirecting to payment gateway...",
-              });
-            }}>
-              Pay Now
-            </Button>
-          </div>
-        ),
-      });
-    }, 1500);
+          ),
+        });
+      }, 1500);
+    }
 
     onClose();
   };
@@ -423,75 +432,110 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
         return (
           <div className="space-y-4">
             <div className="text-center mb-6">
-              <h3 className="text-lg font-semibold mb-2">Payment Method</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-300">Choose your payment method</p>
+              <h3 className="text-lg font-semibold mb-2">Payment Options</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">Choose when to complete your payment</p>
             </div>
-            <RadioGroup value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod}>
-              {paymentMethods.map((method) => (
-                <div key={method.id} className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <RadioGroupItem value={method.id} id={method.id} />
+            
+            {/* Payment Timing Choice */}
+            <div className="space-y-4 mb-6">
+              <RadioGroup value={paymentChoice} onValueChange={(value: 'now' | 'later') => setPaymentChoice(value)}>
+                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <RadioGroupItem value="later" id="later" />
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Label htmlFor={method.id} className="font-medium cursor-pointer">
-                        {method.name}
-                      </Label>
-                      {method.isDefault && <Badge variant="secondary">Default</Badge>}
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300">{method.details}</p>
+                    <Label htmlFor="later" className="font-medium cursor-pointer flex items-center gap-2">
+                      <Clock className="w-4 h-4" />
+                      Pay Later
+                    </Label>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Confirm order now, complete payment anytime</p>
                   </div>
                 </div>
-              ))}
-            </RadioGroup>
+                <div className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <RadioGroupItem value="now" id="now" />
+                  <div className="flex-1">
+                    <Label htmlFor="now" className="font-medium cursor-pointer flex items-center gap-2">
+                      <CreditCard className="w-4 h-4" />
+                      Pay Now
+                    </Label>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">Complete payment immediately</p>
+                  </div>
+                </div>
+              </RadioGroup>
+            </div>
 
-            {/* Add New Payment Method */}
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="w-full">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New Payment Method
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Add Payment Method</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <Select value={newPaymentMethod.type} onValueChange={(value: 'card' | 'paypal' | 'bank') => setNewPaymentMethod({...newPaymentMethod, type: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Payment Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="card">Credit/Debit Card</SelectItem>
-                      <SelectItem value="paypal">PayPal</SelectItem>
-                      <SelectItem value="bank">Bank Transfer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Input 
-                    placeholder="Cardholder Name" 
-                    value={newPaymentMethod.cardholderName}
-                    onChange={(e) => setNewPaymentMethod({...newPaymentMethod, cardholderName: e.target.value})}
-                  />
-                  <Input 
-                    placeholder="Card Number" 
-                    value={newPaymentMethod.cardNumber}
-                    onChange={(e) => setNewPaymentMethod({...newPaymentMethod, cardNumber: e.target.value})}
-                  />
-                  <div className="grid grid-cols-2 gap-2">
-                    <Input 
-                      placeholder="MM/YY" 
-                      value={newPaymentMethod.expiryDate}
-                      onChange={(e) => setNewPaymentMethod({...newPaymentMethod, expiryDate: e.target.value})}
-                    />
-                    <Input 
-                      placeholder="CVV" 
-                      value={newPaymentMethod.cvv}
-                      onChange={(e) => setNewPaymentMethod({...newPaymentMethod, cvv: e.target.value})}
-                    />
-                  </div>
-                  <Button onClick={handleAddPaymentMethod} className="w-full">Save Payment Method</Button>
+            {/* Payment Method Selection (only show if Pay Now is selected) */}
+            {paymentChoice === 'now' && (
+              <>
+                <div className="border-t pt-4">
+                  <h4 className="font-medium mb-3">Select Payment Method</h4>
+                  <RadioGroup value={selectedPaymentMethod} onValueChange={setSelectedPaymentMethod}>
+                    {paymentMethods.map((method) => (
+                      <div key={method.id} className="flex items-center space-x-3 p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800">
+                        <RadioGroupItem value={method.id} id={method.id} />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Label htmlFor={method.id} className="font-medium cursor-pointer">
+                              {method.name}
+                            </Label>
+                            {method.isDefault && <Badge variant="secondary">Default</Badge>}
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-300">{method.details}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </RadioGroup>
+
+                  {/* Add New Payment Method */}
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" className="w-full mt-3">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add New Payment Method
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Add Payment Method</DialogTitle>
+                      </DialogHeader>
+                      <div className="space-y-4">
+                        <Select value={newPaymentMethod.type} onValueChange={(value: 'card' | 'paypal' | 'bank') => setNewPaymentMethod({...newPaymentMethod, type: value})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Payment Type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="card">Credit/Debit Card</SelectItem>
+                            <SelectItem value="paypal">PayPal</SelectItem>
+                            <SelectItem value="bank">Bank Transfer</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <Input 
+                          placeholder="Cardholder Name" 
+                          value={newPaymentMethod.cardholderName}
+                          onChange={(e) => setNewPaymentMethod({...newPaymentMethod, cardholderName: e.target.value})}
+                        />
+                        <Input 
+                          placeholder="Card Number" 
+                          value={newPaymentMethod.cardNumber}
+                          onChange={(e) => setNewPaymentMethod({...newPaymentMethod, cardNumber: e.target.value})}
+                        />
+                        <div className="grid grid-cols-2 gap-2">
+                          <Input 
+                            placeholder="MM/YY" 
+                            value={newPaymentMethod.expiryDate}
+                            onChange={(e) => setNewPaymentMethod({...newPaymentMethod, expiryDate: e.target.value})}
+                          />
+                          <Input 
+                            placeholder="CVV" 
+                            value={newPaymentMethod.cvv}
+                            onChange={(e) => setNewPaymentMethod({...newPaymentMethod, cvv: e.target.value})}
+                          />
+                        </div>
+                        <Button onClick={handleAddPaymentMethod} className="w-full">Save Payment Method</Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
-              </DialogContent>
-            </Dialog>
+              </>
+            )}
           </div>
         );
 
@@ -547,7 +591,7 @@ const StepByStepCheckout = ({ productName, productPrice, onClose }: StepByStepCh
               onClick={handleNext}
               className="flex items-center gap-2"
             >
-              {currentStep === totalSteps ? 'Place Order' : 'Next'}
+              {currentStep === totalSteps ? 'Confirm Order' : 'Next'}
               {currentStep < totalSteps && <ChevronRight className="w-4 h-4" />}
             </Button>
           </div>
