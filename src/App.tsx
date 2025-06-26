@@ -8,8 +8,6 @@ import Index from "./pages/Index";
 import Cart from "./pages/Cart";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
-import Trending from "./pages/Trending";
-import FlashSale from "./pages/FlashSale";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,8 +23,6 @@ const App = () => (
           <Route path="/cart" element={<Cart />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/orders" element={<Orders />} />
-          <Route path="/trending" element={<Trending />} />
-          <Route path="/flash-sale" element={<FlashSale />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
