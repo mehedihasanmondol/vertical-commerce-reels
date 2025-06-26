@@ -5,7 +5,7 @@ import { RelatedProducts } from './RelatedProducts';
 
 export const RightSidebar = () => {
   return (
-    <div className="p-4 space-y-6">
+    <div className="p-4 space-y-4">
       <HeroBanner />
       <TrendingSection />
       <RelatedProducts />

@@ -51,13 +51,13 @@ export const RelatedProducts = () => {
   const currentProduct = relatedProducts[currentIndex];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
+    <div className="space-y-3">
+      <h3 className="text-lg font-bold text-gray-900 dark:text-white flex items-center">
         🔗 Related Products
       </h3>
       
       <div className="relative overflow-hidden">
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 hover:shadow-lg transition-all duration-300">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-md border border-gray-200 dark:border-gray-700">
           <div className="w-full h-32 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-lg mb-3 flex items-center justify-center">
             <span className="text-4xl">📦</span>
           </div>
@@ -79,7 +79,7 @@ export const RelatedProducts = () => {
       </div>
       
       {/* Dots indicator */}
-      <div className="flex justify-center mt-4 space-x-2">
+      <div className="flex justify-center space-x-2">
         {relatedProducts.map((_, index) => (
           <button
             key={index}

@@ -35,7 +35,7 @@ export const DesktopTabletHome = () => {
           toggleDarkMode={toggleDarkMode}
         />
         
-        {/* Facebook-style Layout - No gap at top */}
+        {/* Facebook-style Layout - ProductReel starts from top */}
         <div className="flex w-full pt-16">
           {/* Left Sidebar */}
           <div className="hidden lg:block w-80 fixed left-0 h-full overflow-y-auto scrollbar-hide">
