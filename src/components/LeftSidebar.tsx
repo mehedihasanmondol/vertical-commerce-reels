@@ -1,11 +1,11 @@
 
 import { Categories } from './Categories';
-import { FlashDeals } from './FlashDeals';
+import { FlashSaleReel } from './FlashSaleReel';
 
 export const LeftSidebar = () => {
   return (
     <div className="p-4 space-y-4">
-      <FlashDeals />
+      <FlashSaleReel />
       <Categories />
     </div>
   );
