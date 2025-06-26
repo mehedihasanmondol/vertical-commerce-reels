@@ -50,7 +50,7 @@ export const TrendingSection = () => {
   const currentProduct = trendingProducts[currentIndex];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
+    <div className="bg-white dark:bg-gray-800 rounded-lg mb-6">
       <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 flex items-center">
         🔥 Trending Now
       </h3>
