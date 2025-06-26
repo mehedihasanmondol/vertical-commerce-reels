@@ -2,11 +2,6 @@
 import { useState, useEffect } from 'react';
 import { NavigationHeader } from './NavigationHeader';
 import { ProductReel } from './ProductReel';
-import { HeroBanner } from './HeroBanner';
-import { FlashDeals } from './FlashDeals';
-import { Categories } from './Categories';
-import { TrendingSection } from './TrendingSection';
-import { ReviewsSection } from './ReviewsSection';
 import { LeftSidebar } from './LeftSidebar';
 import { RightSidebar } from './RightSidebar';
 import { mockProducts } from '../data/mockProducts';
@@ -40,8 +35,8 @@ export const DesktopTabletHome = () => {
           toggleDarkMode={toggleDarkMode}
         />
         
-        {/* Facebook-style Layout */}
-        <div className="flex w-full" style={{ paddingTop: '64px' }}>
+        {/* Facebook-style Layout - No gap at top */}
+        <div className="flex w-full pt-16">
           {/* Left Sidebar */}
           <div className="hidden lg:block w-80 fixed left-0 h-full overflow-y-auto scrollbar-hide">
             <LeftSidebar />
