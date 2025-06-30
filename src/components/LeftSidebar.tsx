@@ -15,9 +15,16 @@ export const LeftSidebar = ({ currentProductIndex, products }: LeftSidebarProps)
   );
 
   return (
-    <div className="p-4 space-y-6">
-      <Categories upcomingProducts={upcomingProducts} />
-      <UpcomingProductsReel products={upcomingProducts} />
+    <div className="p-4 flex gap-4 h-full">
+      {/* Categories Section - 25% width */}
+      <div className="w-1/4 flex-shrink-0">
+        <Categories upcomingProducts={upcomingProducts} />
+      </div>
+      
+      {/* Upcoming Products Section - 75% width */}
+      <div className="w-3/4 flex-shrink-0">
+        <UpcomingProductsReel products={upcomingProducts} />
+      </div>
     </div>
   );
 };
