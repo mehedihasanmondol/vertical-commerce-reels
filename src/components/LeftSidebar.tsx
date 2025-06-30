@@ -1,7 +1,6 @@
 
 import { Categories } from './Categories';
-import { FlashDeals } from './FlashDeals';
-import { UpcomingProducts } from './UpcomingProducts';
+import { UpcomingProductsReel } from './UpcomingProductsReel';
 import { Product } from '../types/Product';
 
 interface LeftSidebarProps {
@@ -16,10 +15,9 @@ export const LeftSidebar = ({ currentProductIndex, products }: LeftSidebarProps)
   );
 
   return (
-    <div className="p-4 space-y-4">
-      <FlashDeals />
+    <div className="p-4 space-y-6">
       <Categories upcomingProducts={upcomingProducts} />
-      <UpcomingProducts products={upcomingProducts} />
+      <UpcomingProductsReel products={upcomingProducts} />
     </div>
   );
 };

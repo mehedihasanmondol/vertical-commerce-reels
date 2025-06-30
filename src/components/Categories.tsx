@@ -21,7 +21,7 @@ interface CategoriesProps {
 export const Categories = ({ upcomingProducts = [] }: CategoriesProps) => {
   // Shuffle categories based on upcoming products
   const getShuffledCategories = () => {
-    const seed = upcomingProducts.length > 0 ? upcomingProducts[0].id : 1;
+    const seed = upcomingProducts.length > 0 ? parseInt(upcomingProducts[0].id) : 1;
     const shuffled = [...allCategories];
     
     // Simple shuffle based on product ID
@@ -38,7 +38,7 @@ export const Categories = ({ upcomingProducts = [] }: CategoriesProps) => {
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Shop by Category</h3>
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white">Categories</h3>
         <CategoriesModal />
       </div>
       
