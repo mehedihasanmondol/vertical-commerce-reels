@@ -1,14 +1,17 @@
 
-import { HeroBanner } from './HeroBanner';
 import { TrendingSection } from './TrendingSection';
-import { RelatedProducts } from './RelatedProducts';
+import { RelatedProductsReel } from './RelatedProductsReel';
+import { Product } from '../types/Product';
 
-export const RightSidebar = () => {
+interface RightSidebarProps {
+  currentProduct: Product;
+}
+
+export const RightSidebar = ({ currentProduct }: RightSidebarProps) => {
   return (
-    <div className="p-4 space-y-4">
-      {/* <HeroBanner /> */}
+    <div className="p-4 space-y-6">
+      <RelatedProductsReel currentProduct={currentProduct} />
       <TrendingSection />
-      <RelatedProducts />
     </div>
   );
 };

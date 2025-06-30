@@ -35,15 +35,18 @@ export const DesktopTabletHome = () => {
           toggleDarkMode={toggleDarkMode}
         />
         
-        {/* Facebook-style Layout - ProductReel starts from top */}
+        {/* Adjusted Layout - Slimmer center reel, wider right sidebar */}
         <div className="flex w-full pt-16">
-          {/* Left Sidebar */}
-          <div className="hidden lg:block w-80 fixed left-0 h-full overflow-y-auto scrollbar-hide">
-            <LeftSidebar />
+          {/* Left Sidebar - Fixed width */}
+          <div className="hidden lg:block w-72 fixed left-0 h-full overflow-y-auto scrollbar-hide">
+            <LeftSidebar 
+              currentProductIndex={currentProductIndex}
+              products={mockProducts}
+            />
           </div>
           
-          {/* Center Content - Product Reels */}
-          <div className="flex-1 lg:ml-80 lg:mr-80">
+          {/* Center Content - Slimmer Product Reel */}
+          <div className="flex-1 lg:ml-72 lg:mr-96 max-w-md mx-auto">
             <ProductReel 
               products={mockProducts}
               currentIndex={currentProductIndex}
@@ -51,9 +54,11 @@ export const DesktopTabletHome = () => {
             />
           </div>
           
-          {/* Right Sidebar */}
-          <div className="hidden lg:block w-80 fixed right-0 h-full overflow-y-auto scrollbar-hide">
-            <RightSidebar />
+          {/* Right Sidebar - Wider for better product display */}
+          <div className="hidden lg:block w-96 fixed right-0 h-full overflow-y-auto scrollbar-hide">
+            <RightSidebar 
+              currentProduct={mockProducts[currentProductIndex]}
+            />
           </div>
         </div>
       </div>
