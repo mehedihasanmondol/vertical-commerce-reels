@@ -74,6 +74,7 @@ export const ProductReel = ({ products, currentIndex, onProductChange }: Product
       className="overflow-y-auto snap-y snap-mandatory scrollbar-hide"
       style={{ 
         height: `${reelHeight}px`,
+        marginTop: '64px', // Account for fixed header
         scrollbarWidth: 'none', 
         msOverflowStyle: 'none' 
       }}
