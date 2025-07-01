@@ -49,8 +49,8 @@ export const ProductReel = ({ products, currentIndex, onProductChange }: Product
         
         // Calculate which product is currently in view
         const scrollTop = container.scrollTop;
-        // Use the stable viewport height minus header height
-        const reelHeight = viewportHeight - 64;
+        // Use full viewport height for desktop, minus header for mobile
+        const reelHeight = window.innerWidth >= 768 ? viewportHeight : viewportHeight - 64;
         const newIndex = Math.round(scrollTop / reelHeight);
         
         if (newIndex !== currentIndex && newIndex >= 0 && newIndex < products.length) {
@@ -66,15 +66,18 @@ export const ProductReel = ({ products, currentIndex, onProductChange }: Product
     };
   }, [currentIndex, onProductChange, products.length, viewportHeight]);
 
-  const reelHeight = viewportHeight - 64;
+  // Desktop should use full height, mobile should account for header
+  const reelHeight = window.innerWidth >= 768 ? viewportHeight : viewportHeight - 64;
+  const containerStyle = window.innerWidth >= 768 
+    ? { height: `${reelHeight}px` }
+    : { height: `${reelHeight}px`, marginTop: '64px' };
 
   return (
     <div 
       ref={containerRef}
       className="overflow-y-auto snap-y snap-mandatory scrollbar-hide"
       style={{ 
-        height: `${reelHeight}px`,
-        marginTop: '64px', // Account for fixed header
+        ...containerStyle,
         scrollbarWidth: 'none', 
         msOverflowStyle: 'none' 
       }}

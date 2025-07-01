@@ -1,7 +1,5 @@
 
-import { useState, useRef, useEffect } from 'react';
 import { Product } from '../types/Product';
-import { ChevronUp, ChevronDown } from 'lucide-react';
 
 interface UpcomingProductsProps {
   products: Product[];
@@ -9,48 +7,8 @@ interface UpcomingProductsProps {
 }
 
 export const UpcomingProducts = ({ products, onProductSelect }: UpcomingProductsProps) => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startY, setStartY] = useState(0);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true);
-    setStartY(e.clientY);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    
-    const deltaY = startY - e.clientY;
-    if (Math.abs(deltaY) > 50) {
-      if (deltaY > 0 && currentIndex < products.length - 1) {
-        setCurrentIndex(currentIndex + 1);
-      } else if (deltaY < 0 && currentIndex > 0) {
-        setCurrentIndex(currentIndex - 1);
-      }
-      setIsDragging(false);
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
   const handleProductClick = (index: number) => {
     onProductSelect(index);
-  };
-
-  const nextProduct = () => {
-    if (currentIndex < products.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  const prevProduct = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
   };
 
   return (
@@ -61,116 +19,52 @@ export const UpcomingProducts = ({ products, onProductSelect }: UpcomingProducts
         </h3>
       </div>
 
-      <div className="flex-1 relative overflow-hidden">
-        {/* Navigation Arrows */}
-        <button
-          onClick={prevProduct}
-          disabled={currentIndex === 0}
-          className="absolute top-2 left-1/2 transform -translate-x-1/2 z-10 p-1 rounded-full bg-black/20 text-white hover:bg-black/40 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-        >
-          <ChevronUp size={16} />
-        </button>
+      <div className="flex-1 overflow-y-auto p-3">
+        <div className="space-y-3">
+          {products.slice(0, 3).map((product, index) => (
+            <div
+              key={product.id}
+              className="relative bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl overflow-hidden cursor-pointer group hover:scale-102 transition-all duration-300 shadow-md hover:shadow-lg aspect-[4/3]"
+              onClick={() => handleProductClick(index)}
+            >
+              <img
+                src={product.images[0]}
+                alt={product.name}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              />
+              
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              
+              {/* Price Badge */}
+              <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm text-black px-2 py-1 rounded-full text-xs font-bold">
+                ${product.price}
+              </div>
 
-        <button
-          onClick={nextProduct}
-          disabled={currentIndex === products.length - 1}
-          className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-10 p-1 rounded-full bg-black/20 text-white hover:bg-black/40 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
-        >
-          <ChevronDown size={16} />
-        </button>
-
-        {/* Products Container */}
-        <div
-          ref={containerRef}
-          className="h-full relative cursor-grab active:cursor-grabbing"
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseUp}
-        >
-          {products.map((product, index) => {
-            const isActive = index === currentIndex;
-            const isPrevious = index === currentIndex - 1;
-            const isNext = index === currentIndex + 1;
-            
-            let transform = 'translateY(100%)';
-            let opacity = 0;
-            let scale = 0.8;
-            let zIndex = 0;
-
-            if (isActive) {
-              transform = 'translateY(0%)';
-              opacity = 1;
-              scale = 1;
-              zIndex = 3;
-            } else if (isPrevious) {
-              transform = 'translateY(-100%)';
-              opacity = 0.7;
-              scale = 0.9;
-              zIndex = 2;
-            } else if (isNext) {
-              transform = 'translateY(100%)';
-              opacity = 0.7;
-              scale = 0.9;
-              zIndex = 2;
-            }
-
-            return (
-              <div
-                key={product.id}
-                className="absolute inset-4 transition-all duration-500 ease-out rounded-xl overflow-hidden cursor-pointer group"
-                style={{
-                  transform: `${transform} scale(${scale})`,
-                  opacity,
-                  zIndex,
-                }}
-                onClick={() => handleProductClick(index)}
-              >
-                <div className="relative h-full bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl overflow-hidden">
-                  <img
-                    src={product.images[0]}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                  
-                  {/* Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  
-                  {/* Product Info */}
-                  <div className="absolute bottom-0 left-0 right-0 p-3 text-white">
-                    <h4 className="font-semibold text-sm mb-1 line-clamp-2">
-                      {product.name}
-                    </h4>
-                    <p className="text-xs opacity-90">${product.price}</p>
-                  </div>
-
-                  {/* Pull Indicator */}
-                  {isActive && (
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white/80 group-hover:text-white transition-colors">
-                      <div className="flex flex-col items-center space-y-1">
-                        <ChevronUp size={20} className="animate-bounce" />
-                        <span className="text-xs font-medium">Pull to open</span>
-                        <ChevronDown size={20} className="animate-bounce" style={{ animationDelay: '0.5s' }} />
-                      </div>
-                    </div>
-                  )}
+              {/* Product Info */}
+              <div className="absolute bottom-0 left-0 right-0 p-3 text-white transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                <h4 className="font-semibold text-sm mb-1 line-clamp-1">
+                  {product.name}
+                </h4>
+                <div className="flex flex-wrap gap-1">
+                  {product.features.slice(0, 1).map((feature, featureIndex) => (
+                    <span
+                      key={featureIndex}
+                      className="bg-white/20 backdrop-blur-sm text-white px-1.5 py-0.5 rounded-full text-xs"
+                    >
+                      {feature}
+                    </span>
+                  ))}
                 </div>
               </div>
-            );
-          })}
-        </div>
 
-        {/* Progress Indicators */}
-        <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex flex-col space-y-1">
-          {products.map((_, index) => (
-            <div
-              key={index}
-              className={`w-1 h-6 rounded-full transition-all ${
-                index === currentIndex
-                  ? 'bg-white'
-                  : 'bg-white/30'
-              }`}
-            />
+              {/* Play Icon */}
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                <div className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                  <div className="w-0 h-0 border-l-4 border-l-white border-y-2 border-y-transparent ml-0.5" />
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </div>
