@@ -48,7 +48,7 @@ export const DesktopLayout = ({
         index !== currentIndex && 
         (selectedCategory === 'All' || p.category === currentProduct?.category)
       )
-      .slice(0, 6);
+      .slice(0, 4); // Only 4 products for 2x2 grid
     setRelatedProducts(related);
   }, [currentIndex, products, selectedCategory]);
 
@@ -74,10 +74,10 @@ export const DesktopLayout = ({
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black">
-      {/* Left Sidebar - Fixed width 300px to match drawing proportions */}
-      <div className="w-80 border-r border-gray-200 dark:border-gray-800 flex flex-col">
-        {/* Categories Section - 30% of left sidebar height */}
-        <div className="h-[30%] bg-white/50 dark:bg-black/50 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
+      {/* Left Section - Categories (very narrow) + Up Next (wider) */}
+      <div className="w-96 flex border-r border-gray-200 dark:border-gray-800">
+        {/* Categories - Very narrow section like in drawing */}
+        <div className="w-20 bg-white/50 dark:bg-black/50 backdrop-blur-sm border-r border-gray-200 dark:border-gray-800">
           <CategorySidebar
             categories={categories}
             selectedCategory={selectedCategory}
@@ -85,8 +85,8 @@ export const DesktopLayout = ({
           />
         </div>
         
-        {/* Upcoming Products Section - 70% of left sidebar height */}
-        <div className="h-[70%] bg-white/30 dark:bg-black/30 backdrop-blur-sm">
+        {/* Up Next - Main left section */}
+        <div className="flex-1 bg-white/30 dark:bg-black/30 backdrop-blur-sm">
           <UpcomingProducts
             products={upcomingProducts}
             onProductSelect={handleUpcomingProductSelect}
@@ -103,7 +103,7 @@ export const DesktopLayout = ({
         />
       </div>
 
-      {/* Right Sidebar - Fixed width 320px for better product display */}
+      {/* Right Sidebar - Related Products (2x2 grid) */}
       <div className="w-80 bg-white/30 dark:bg-black/30 backdrop-blur-sm border-l border-gray-200 dark:border-gray-800">
         <RelatedProducts
           products={relatedProducts}

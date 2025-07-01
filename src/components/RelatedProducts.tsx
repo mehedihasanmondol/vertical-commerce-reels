@@ -7,6 +7,9 @@ interface RelatedProductsProps {
 }
 
 export const RelatedProducts = ({ products, onProductSelect }: RelatedProductsProps) => {
+  // Ensure we only show 4 products maximum for 2x2 grid
+  const displayProducts = products.slice(0, 4);
+
   return (
     <div className="h-full flex flex-col">
       <div className="p-4 border-b border-gray-200 dark:border-gray-700">
@@ -16,11 +19,11 @@ export const RelatedProducts = ({ products, onProductSelect }: RelatedProductsPr
       </div>
 
       <div className="flex-1 overflow-y-auto p-4">
-        <div className="grid grid-cols-2 gap-3">
-          {products.map((product) => (
+        <div className="grid grid-cols-2 gap-4 h-full">
+          {displayProducts.map((product) => (
             <div
               key={product.id}
-              className="relative aspect-[3/4] bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl overflow-hidden cursor-pointer group hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
+              className="relative aspect-square bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl overflow-hidden cursor-pointer group hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
               onClick={() => onProductSelect(product)}
             >
               <img
@@ -43,7 +46,7 @@ export const RelatedProducts = ({ products, onProductSelect }: RelatedProductsPr
                   {product.name}
                 </h4>
                 <div className="flex flex-wrap gap-1">
-                  {product.features.slice(0, 2).map((feature, index) => (
+                  {product.features.slice(0, 1).map((feature, index) => (
                     <span
                       key={index}
                       className="bg-white/20 backdrop-blur-sm text-white px-1.5 py-0.5 rounded-full text-xs"
