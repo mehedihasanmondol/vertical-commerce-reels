@@ -74,10 +74,10 @@ export const DesktopLayout = ({
 
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black">
-      {/* Left Sidebar */}
-      <div className="w-80 border-r border-gray-200 dark:border-gray-800 flex">
-        {/* Categories - 25% of left sidebar */}
-        <div className="w-1/4 bg-white/50 dark:bg-black/50 backdrop-blur-sm">
+      {/* Left Sidebar - Fixed width 300px to match drawing proportions */}
+      <div className="w-80 border-r border-gray-200 dark:border-gray-800 flex flex-col">
+        {/* Categories Section - 30% of left sidebar height */}
+        <div className="h-[30%] bg-white/50 dark:bg-black/50 backdrop-blur-sm border-b border-gray-200 dark:border-gray-800">
           <CategorySidebar
             categories={categories}
             selectedCategory={selectedCategory}
@@ -85,8 +85,8 @@ export const DesktopLayout = ({
           />
         </div>
         
-        {/* Upcoming Products - 75% of left sidebar */}
-        <div className="w-3/4 bg-white/30 dark:bg-black/30 backdrop-blur-sm">
+        {/* Upcoming Products Section - 70% of left sidebar height */}
+        <div className="h-[70%] bg-white/30 dark:bg-black/30 backdrop-blur-sm">
           <UpcomingProducts
             products={upcomingProducts}
             onProductSelect={handleUpcomingProductSelect}
@@ -94,7 +94,7 @@ export const DesktopLayout = ({
         </div>
       </div>
 
-      {/* Center Reel */}
+      {/* Center Reel - Takes remaining space between sidebars */}
       <div className="flex-1 relative">
         <ProductReel
           products={products}
@@ -103,7 +103,7 @@ export const DesktopLayout = ({
         />
       </div>
 
-      {/* Right Sidebar */}
+      {/* Right Sidebar - Fixed width 320px for better product display */}
       <div className="w-80 bg-white/30 dark:bg-black/30 backdrop-blur-sm border-l border-gray-200 dark:border-gray-800">
         <RelatedProducts
           products={relatedProducts}
