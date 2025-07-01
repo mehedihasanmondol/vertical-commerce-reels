@@ -82,7 +82,7 @@ const Index = () => {
     );
   }
 
-  // Desktop View - No margin-top, full height
+  // Desktop View
   return (
     <div className={`min-h-screen ${isDarkMode ? 'dark' : ''}`}>
       <NavigationHeader 
@@ -90,7 +90,7 @@ const Index = () => {
         toggleDarkMode={toggleDarkMode}
       />
       
-      <div className="h-screen" style={{ paddingTop: '64px' }}>
+      <div style={{ marginTop: '64px', height: 'calc(100vh - 64px)' }}>
         <DesktopLayout
           products={mockProducts}
           currentIndex={currentProductIndex}

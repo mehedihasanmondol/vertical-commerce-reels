@@ -28,14 +28,14 @@ export const DesktopLayout = ({
   ]);
 
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [upcomingProducts, setUpcomingProducts] = useState(products.slice(0, 6));
-  const [relatedProducts, setRelatedProducts] = useState(products.slice(1, 9));
+  const [upcomingProducts, setUpcomingProducts] = useState(products.slice(0, 3));
+  const [relatedProducts, setRelatedProducts] = useState(products.slice(1, 7));
 
   // Update upcoming and related products when current product changes
   useEffect(() => {
-    // Get next 6 products for upcoming (showing 3 at a time)
+    // Get next 3 products for upcoming
     const nextProducts = [];
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 1; i <= 3; i++) {
       const nextIndex = (currentIndex + i) % products.length;
       nextProducts.push(products[nextIndex]);
     }
@@ -48,7 +48,7 @@ export const DesktopLayout = ({
         index !== currentIndex && 
         (selectedCategory === 'All' || p.category === currentProduct?.category)
       )
-      .slice(0, 8);
+      .slice(0, 6);
     setRelatedProducts(related);
   }, [currentIndex, products, selectedCategory]);
 
@@ -73,7 +73,7 @@ export const DesktopLayout = ({
   };
 
   return (
-    <div className="flex h-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black">
+    <div className="flex h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-black">
       {/* Left Sidebar */}
       <div className="w-80 border-r border-gray-200 dark:border-gray-800 flex">
         {/* Categories - 25% of left sidebar */}
@@ -94,7 +94,7 @@ export const DesktopLayout = ({
         </div>
       </div>
 
-      {/* Center Reel - No gap from top */}
+      {/* Center Reel */}
       <div className="flex-1 relative">
         <ProductReel
           products={products}
